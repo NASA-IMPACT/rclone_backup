@@ -1,0 +1,69 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This policy allows rclone to mount Buckets from your account.",
+    "Resources": {
+      "RcloneUser": {
+        "Type": "AWS::IAM::User",
+        "Properties": {
+          "Path": "/rclone/",
+          "Policies": [
+            {
+              "PolicyName": "RclonePolicy",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                      "Sid": "ManageListAllBucketsForRclone",
+                      "Effect": "Allow",
+                      "Action": "s3:ListAllMyBuckets",
+                      "Resource": "arn:aws:s3:::*"
+                  },
+                  {
+                      "Sid": "ManageMountBucketUtils",
+                      "Effect": "Allow",
+                      "Action": [
+                          "s3:ListBucket",
+                          "s3:DeleteObject",
+                          "s3:GetObject",
+                          "s3:PutObject",
+                          "s3:PutObjectAcl"
+                      ],
+                      "Resource": [
+                        "arn:aws:s3:::rclone-remote-bucket/*",
+                        "arn:aws:s3:::rclone-remote-bucket"
+                      ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "RcloneUserKeys": {
+        "Type": "AWS::IAM::AccessKey",
+        "Properties": {
+          "UserName": {
+            "Ref": "RcloneUser"
+          }
+        }
+      }
+    },
+    "Outputs": {
+      "AccessKey": {
+        "Value": {
+          "Ref": "RcloneUserKeys"
+        },
+        "Description": "Access Key ID of a Rclone User"
+      },
+      "SecretKey": {
+        "Value": {
+          "Fn::GetAtt": [
+            "RcloneUserKeys",
+            "SecretAccessKey"
+          ]
+        },
+        "Description": "Secret Key of a Rclone User"
+      }
+    }
+  }
+  
