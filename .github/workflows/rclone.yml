@@ -9,4 +9,4 @@ jobs:
         uses: AnimMouse/setup-rclone@v1
         with:
           rclone_config: ${{ secrets.RCLONE_CONFIG }}
-      - run: rclone copy source:sourcepath dest:destpath
+      - run: rclone copy google-drive:TEST s3:rclone-remote-bucket
